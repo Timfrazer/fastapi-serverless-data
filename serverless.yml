@@ -1,0 +1,54 @@
+service: unicorn-api
+
+provider:
+  name: aws
+  runtime: python3.8
+  timeout: 15
+  region: us-east-1
+  environment:
+    BUCKET:
+      Ref: S3BucketState
+    ATHENA_BUCKET:
+       Ref: S3AthenaResultBucket
+  iamRoleStatements: # standard permissions to store data in s3 for Athena
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+          - "*"
+    - Effect: "Allow"
+      Action:
+        - "glue:*"
+      Resource:
+          - "*"
+    - Effect: "Allow"
+      Action:
+        - "athena:*"
+      Resource:
+          - "*"
+package:
+  exclude:
+    - venv/**
+    - node_modules/**
+
+functions:
+  app:
+    handler: app.main.handler
+    events:
+      - httpApi:
+          path: '*'
+
+#This creates an s3 bucket for our unicorn data
+resources:
+  Resources:
+    S3BucketState:
+      Type: AWS::S3::Bucket
+    S3AthenaResultBucket:
+      Type: AWS::S3::Bucket
+
+custom:
+  pythonRequirements:
+    dockerizePip: True
+
+plugins:
+  - serverless-python-requirements
