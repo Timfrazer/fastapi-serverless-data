@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 from mangum import Mangum
 from .models import UnicornPayloadSchema
-import json
 import boto3
-import os
-
+from os import environ
 
 app = FastAPI(title="Unicorn API")
 
@@ -17,7 +15,8 @@ def hello():
 @app.post("/unicorn")
 def post_unicorn(unicorn: UnicornPayloadSchema):
     #return UUID or some sort of unique id
-    return unicorn
+    r = s3_write(unicorn.json())
+    return r
 
 
 @app.get("/unicorn/{id}")
@@ -26,18 +25,14 @@ def get_unicorn(uid: str):
     pass
 
 
-# this is where I'll write data to s3 for athena
-def s3_write(data: dict) -> int:
+# this is where we write data to s3 for athena
+def s3_write(data ) -> int:
     s3 = boto3.client('s3')
-    bucket_name = os.environ['BUCKET_NAME']
+    bucket_name = environ.get("BUCKET_NAME", "unicorn")
     # Add a file to s3 Object Store
-    response = s3.put_object(
-        Bucket=bucket_name,
-        Key='Object Name',
-        Body=json.dump(data),
-        ACL='onpublic-read'
-        )
-    return response
+    r = s3.put_object(Bucket=bucket_name, Key='test', Body=data)
+    print(r)
+    return r
 
 
 handler = Mangum(app)

@@ -164,10 +164,10 @@ def test_app():
         yield test_client
 ```
 
-Here, we imported Starlette's TestClient, which uses the requests library to make requests against the FastAPI app.
+Here, we imported Starlette's TestClient which is wrapped by FastAPI, which uses the requests library to make requests against the FastAPI app.
 when the route is hit with a POST request, FastAPI will read the body of the request and validate the data:
-If valid, the data will be available in the payload parameter. FastAPI also generates JSON Schema definitions that are then used to automatically generate the OpenAPI schema and the API documentation.
-If invalid, an error is immediately returned.
+When valid, the data will be available in the payload parameter. FastAPI also generates JSON Schema definitions that are then used to generate the OpenAPI schema and API documentation.
+If the payload is incorrect per the pydantic model, an error is returned.
 
 
  `http --json POST http://localhost:8004/unicorn/ data={ "name": "honey", "rainbow": True }`
@@ -211,8 +211,32 @@ plugins:
   - serverless-python-requirements
 ```
 
+If you haven't already you should setup your AWS account and serverless so that it can deploy this to your cloud. 
 
-TODO: Deploy our service to aws
+`sls deploy`
+
+After a minute or so the output into your console should be something like this -
+
+````bash
+....................................
+Serverless: Stack update finished...
+Service Information
+service: unicorn-api
+stage: dev
+region: us-east-1
+stack: unicorn-api-dev
+resources: 13
+api keys:
+  None
+endpoints:
+  ANY - https://123456.execute-api.us-east-1.amazonaws.com
+functions:
+  app: unicorn-api-dev-app
+layers:
+  None
+````
+you should now be able to go to the `endpoints: ANY - https://your_aws_url.us-east-1.amazonaws.com/docs`
+and see your API live on the internet.
 
 ## Section 4
 In this section we will create another data model and setup our tests for code coverage.

@@ -37,6 +37,8 @@ functions:
     events:
       - httpApi:
           path: '*'
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
 
 #This creates an s3 bucket for our unicorn data
 resources:
@@ -49,6 +51,8 @@ resources:
 custom:
   pythonRequirements:
     dockerizePip: True
+    slim: True
+    layer: True
 
 plugins:
   - serverless-python-requirements

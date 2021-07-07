@@ -10,12 +10,12 @@ mangum = "^0.11.0"
 fastapi = "^0.65.2"
 requests = "^2.25.1"
 boto3 = "^1.17.95"
-coverage = "^5.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 uvicorn = "^0.14.0"
 moto = "^2.0.9"
+coverage = "^5.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
